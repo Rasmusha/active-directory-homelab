@@ -1,0 +1,18 @@
+# Salaisuudet ja avaimet
+*.pem
+*.key
+*.pfx
+.env
+*password*
+*secret*
+
+# Virtuaalikoneet ja levykuvat (isoja, eivät kuulu repoon)
+*.vhd
+*.vhdx
+*.iso
+*.avhdx
+
+# Käyttöjärjestelmän roskat
+.DS_Store
+Thumbs.db
+desktop.ini
