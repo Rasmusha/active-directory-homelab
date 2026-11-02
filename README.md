@@ -1,58 +1,53 @@
-# Helpdesk-labra
+# Active Directory Homelab
 
-Kotilabra, jolla harjoittelen IT-tuen ja yritysympäristön perustehtäviä: Active Directory, DNS, DHCP, käyttäjähallinta, Group Policy, tikettijärjestelmä ja vianmääritys.
+A home lab where I practice IT support and system administration: Active Directory, DNS, DHCP, user management, Group Policy, ticketing and troubleshooting.
 
-> Tämä on oppimisprojekti. Ympäristö on eristetty kotiverkostani, eikä siinä ole oikeita käyttäjiä tai tietoja.
+> This is a learning project. The environment contains no real users or data.
 
-## Tavoite
+🇫🇮 [Suomeksi](README.fi.md)
 
-- Oppia IT-ylläpidon ja käyttötuen perusteet käytännössä
-- Dokumentoida tekemäni niin, että joku muu pystyy toistamaan sen
-- Kerätä näyttöä osaamisesta työnhakua varten
+## Goals
 
-## Ympäristö
+- Learn IT support and system administration skills through hands-on practice
+- Document my progress so that anyone can replicate it
 
-| Osa        | Kuvaus                                            |
-| ---------- | ------------------------------------------------- |
-| Isäntäkone | PC, 16 GB RAM, Hyper-V                            |
-| Palvelin   | Windows Server 2022 (DC01): AD DS, DNS, DHCP      |
-| Asiakkaat  | Windows 11 -VM ja fyysinen läppäri (8 GB)         |
-| Verkko     | Sisäinen Hyper-V-kytkin `LabNet`, 192.168.50.0/24 |
-| Domain     | lab.local                                         |
+## Lab overview
 
-<!-- Lisää tähän verkkokaavio, kun se on tehty: screenshots/network-diagram.png -->
-
-## Edistyminen
-
-- [x] Vaihe 1: Domain controller (AD, DNS, DHCP) → [docs/01-domain-controller.md](docs/01-domain-controller.md)
-- [ ] Vaihe 2: Käyttäjät, ryhmät ja Group Policy
-- [ ] Vaihe 3: Tiedostopalvelin ja oikeudet
-- [ ] Vaihe 4: Tikettijärjestelmä (GLPI tai osTicket)
-- [ ] Vaihe 5: Etätuki ja valvonta
-- [ ] Vaihe 6: Microsoft 365 -kokeilutenantti ja Intune
-
-## Repon rakenne
-
-```
-docs/              Vaihe vaiheelta -dokumentaatio
-scripts/           Omat PowerShell-skriptit
-troubleshooting/   Ratkaistut ongelmat: oire, syy, korjaus
-screenshots/       Kuvakaappaukset
-```
-
-## Mitä olen oppinut
-
-<!-- Kirjoita tähän omin sanoin 3-5 tärkeintä oppia. Päivitä projektin edetessä. -->
-
-## Huomio
-
-Repossa ei ole salasanoja, lisenssiavaimia eikä kotiverkon oikeita osoitteita.
+- Windows Server 2025 domain controller (AD DS, DNS, DHCP)
+- Windows 11 VM client joined to the domain
+- Hyper-V on a single host, internal network with NAT (192.168.50.0/24)
 
 ```mermaid
 flowchart LR
     Net((Internet)) --- Router[Home router]
     Router --- Host["Host PC<br/>Hyper-V + NAT<br/>192.168.50.1"]
     Host --- Lab{{"LabNet switch<br/>192.168.50.0/24"}}
-    Lab --- DC01["DC01<br/>Windows Server 2022<br/>192.168.50.10<br/>AD DS, DNS, DHCP"]
+    Lab --- DC01["DC01<br/>Windows Server 2025<br/>192.168.50.10<br/>AD DS, DNS, DHCP"]
     Lab --- CLIENT01["CLIENT01<br/>Windows 11 Pro<br/>DHCP: 192.168.50.100-200"]
 ```
+
+## Progress
+
+- [x] Step 1: Domain controller (AD, DNS, DHCP) → [docs/01-domain-controller.md](docs/01-domain-controller.md)
+- [ ] Step 2: Users, groups and Group Policy
+- [ ] Step 3: File server and permissions
+- [ ] Step 4: Ticketing system (GLPI or osTicket)
+- [ ] Step 5: Remote support and monitoring
+- [ ] Step 6: Microsoft 365 trial tenant and Intune
+
+## Repo structure
+
+```
+docs/              Step-by-step documentation
+scripts/           The PowerShell scripts I used
+troubleshooting/   Solved problems: symptom, cause, fix
+screenshots/       Screenshots
+```
+
+## What I have learned
+
+_To be filled in as the project progresses._
+
+## Note
+
+This repository contains no passwords, license keys or real home network addresses.
