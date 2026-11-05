@@ -39,8 +39,6 @@ flowchart LR
 
 ```
 docs/              Step-by-step documentation
-scripts/           The PowerShell scripts I used
-troubleshooting/   Solved problems: symptom, cause, fix
 screenshots/       Screenshots
 ```
 
