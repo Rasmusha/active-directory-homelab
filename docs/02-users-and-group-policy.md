@@ -2,8 +2,6 @@
 
 In this part I created new users, moved them to right OU and made some Group Policies.
 
-![Overview: GPO linked to the Kayttajat OU](images/gpmc-linked-gpo.png)
-
 ## 1. Creating users from a CSV file
 
 I created a CSV file `C:\Lab\users.csv` on DC01:
@@ -62,13 +60,17 @@ Next I moved the client pc to its own OU and made it so that all new computers w
 
 I created a GPO called `Restrict Control Panel` and linked it to the `Kayttajat` OU.
 
-![GPO setting in the editor](images/gpo-editor.png)
+![GPO setting in the editor](../screenshots/Part2/GPO_rule.png)
 
 ## 4. Password policy
 
 Next I created some a new password policy, which required the user passwords to be at least 10 characters long.
 
-![Password policy after the change](images/password-policy.png)
+![Password policy after the change](../screenshots/Part2/passwordPolicyChange.png)
+
+Also changed account lockout policies so that the account locks out after 5 failed attempts.
+
+![Account lockout policy change](../screenshots/Part2/AccountLockout.png)
 
 ## 5. Testing on the client
 
@@ -81,8 +83,7 @@ gpresult /r
 
 `Restrict Control Panel` appears under _Applied Group Policy Objects_, and opening Control Panel shows a "restricted" message. The domain Administrator is not in the `Kayttajat` OU, so the policy does not apply to that account.
 
-![gpresult output](images/gpresult.png)
-![Control Panel blocked](images/control-panel-blocked.png)
+![Control Panel blocked](../screenshots/Part2/GPOExample.png)
 
 ## Problems I ran into
 
@@ -92,6 +93,6 @@ gpresult /r
 - **Cause:** Windows Firewall on the client blocks remote management by default (DCOM and Remote Event Log Management rules).
 - **Fix:** Moved the user that was logged on to ClIENT01 to `Remote management users` which solved the issue.
 
-![Error message](images/computer-management-error.png)
+![Error message](../screenshots/Part2/manage-error.png)
 
 ->
