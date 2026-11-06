@@ -52,7 +52,7 @@ Get-ADUser -Filter * -SearchBase "OU=Kayttajat,DC=lab,DC=local" | Select-Object 
 Get-ADGroupMember -Identity "Myynti" | Select-Object Name
 ```
 
-![Users in the Kayttajat OU](images/ad-users-ou.png)
+![Users in the Kayttajat OU](../screenshots/Part2/Kayttajat.png)
 
 ## 2. Moving CLIENT01 to its own OU
 
