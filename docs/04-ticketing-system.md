@@ -25,7 +25,7 @@ $dvd = Get-VMDvdDrive -VMName "TICKET01"
 Set-VMFirmware -VMName "TICKET01" -FirstBootDevice $dvd
 ```
 
-![TICKET01 in Hyper-V Manager](images/ticket01-hyperv.png)
+![TICKET01 in Hyper-V Manager](../screenshots/Part4/Ticket01_Online.png)
 
 ## 2. Installing Ubuntu Server
 
@@ -37,7 +37,7 @@ sudo apt upgrade -y
 sudo timedatectl set-timezone Europe/Helsinki
 ```
 
-Set a static IP with netplan (`/etc/netplan/<file>.yaml`):
+Then I set a static IP with netplan (`/etc/netplan/<file>.yaml`):
 
 ```yaml
 network:
@@ -54,6 +54,8 @@ network:
         search: [lab.local]
 ```
 
+Next I made sure the connection works
+
 ```bash
 sudo netplan try
 ip a
@@ -67,14 +69,12 @@ On DC01, I added a DNS record so other machines can find the server by name:
 Add-DnsServerResourceRecordA -Name "ticket01" -ZoneName "lab.local" -IPv4Address 192.168.50.20
 ```
 
-![ip a output on TICKET01](images/ticket01-ip-a.png)
-![DNS record in DNS Manager](images/dns-ticket01.png)
-
-**What happened:**
-
-<!-- Why a static address for a server? Why is the A record needed? Why is the DHCP scope (.100-.200) kept apart from static addresses? -->
+![ip a output on TICKET01](.../screenshots/Part4/TICKET01_IP.png)
+![DNS record in DNS Manager](.../screenshots/Part4/ticket01_dns.png)
 
 ## 3. Installing Apache, PHP, MariaDB and GLPI
+
+Next I installed the classic LAMP stack.
 
 ```bash
 sudo apt install -y apache2 mariadb-server php libapache2-mod-php \
@@ -98,7 +98,7 @@ EXIT;
 sudo mysql_tzinfo_to_sql /usr/share/zoneinfo | sudo mysql mysql
 ```
 
-Download and unpack GLPI (check the current 11.0.x file name on the GLPI releases page):
+Next I downloaded GLPI:
 
 ```bash
 cd /tmp
@@ -123,6 +123,8 @@ Apache site `/etc/apache2/sites-available/glpi.conf`:
 </VirtualHost>
 ```
 
+I disabled the default Apache site, enabled the rewrite module and enabled the GLPI site. Then I tested the configuration and reloaded Apache.
+
 ```bash
 sudo a2enmod rewrite
 sudo a2dissite 000-default
@@ -131,7 +133,7 @@ sudo apache2ctl configtest
 sudo systemctl reload apache2
 ```
 
-PHP settings in `/etc/php/8.3/apache2/php.ini` (check the version folder with `ls /etc/php/`):
+PHP settings in `/etc/php/8.3/apache2/php.ini` :
 
 ```ini
 upload_max_filesize = 20M
@@ -147,25 +149,17 @@ date.timezone = Europe/Helsinki
 sudo systemctl restart apache2
 ```
 
-**What happened:**
-
-<!-- In your own words: what does each of the four programs do? Why does GLPI get its own database user instead of using root? Why does DocumentRoot point to `public`? -->
-
 ## 4. GLPI web installer
 
 I opened `http://ticket01.lab.local` on CLIENT01 and followed the installer. All requirements were green.
 
-![GLPI requirements check](images/glpi-requirements.png)
-
 After the installation I changed the default passwords of the built-in accounts.
 
-**What happened:**
-
-<!-- Why must the default passwords be changed right away? -->
+![GLPI homepage](.../screenshots/Part4/glpi_homepage.png)
 
 ## 5. Active Directory login (LDAP)
 
-I created a service account `svc-glpi` in an OU called `Palvelutilit` (password never expires, user cannot change password) and added the LDAP directory in GLPI (_Setup → Authentication → LDAP directories_).
+I created a service account `svc-glpi` in an OU called `Palvelutilit` and added the LDAP directory in GLPI
 
 | Setting               | Value                          |
 | --------------------- | ------------------------------ |
@@ -175,7 +169,7 @@ I created a service account `svc-glpi` in an OU called `Palvelutilit` (password 
 | Login field           | `samaccountname`               |
 | Synchronization field | `objectguid`                   |
 
-![LDAP directory test](images/glpi-ldap-test.png)
+![LDAP directory test](.../screenshots/Part4/LDAP_Test.png)
 
 I tested the connection from TICKET01 as well, without GLPI:
 
@@ -183,10 +177,6 @@ I tested the connection from TICKET01 as well, without GLPI:
 sudo apt install -y ldap-utils
 ldapsearch -x -H ldap://192.168.50.10 -D "svc-glpi@lab.local" -W -b "OU=Kayttajat,DC=lab,DC=local" "(objectClass=user)" sAMAccountName
 ```
-
-**What happened:**
-
-<!-- What is LDAP? What does the service account do? Why is the service account not a Domain Admin? -->
 
 ## 6. Categories and tickets
 
@@ -196,7 +186,7 @@ I created ITIL categories in _Setup → Dropdowns → Assistance → ITIL catego
 2. I assigned it to myself, added a follow-up and wrote a solution.
 3. The ticket moved New → Processing → Solved.
 
-![Ticket created by Matti](images/ticket-created.png)
+![Ticket created by Matti](.../screenshots/Part4/Ticket_Matti.png)
 ![Ticket timeline after solving](images/ticket-timeline.png)
 
 | Test                                          | Expected                                   | Result          |
@@ -206,48 +196,28 @@ I created ITIL categories in _Setup → Dropdowns → Assistance → ITIL catego
 | Matti creates a ticket                        | Appears in the admin list                  | <!-- yes/no --> |
 | Admin solves the ticket                       | Status _Solved_, solution visible to Matti | <!-- yes/no --> |
 
-**What happened:**
-
-<!-- Did it work the first time? What did the ticket timeline show? Why is writing a clear solution important? -->
-
 ## Problems I ran into
-
-<!-- Keep only the cases that really happened to you. -->
 
 ### Ubuntu installer could not reach the package mirror
 
 - **Symptom:** "Temporary failure resolving archive.ubuntu.com" in the mirror configuration step.
-- **Cause:** <!-- DC01 (the DNS server) was powered off, and NAT had not been created -->
-- **Fix:** <!-- started DC01, created LabNAT on the host: New-NetNat, checked with ping 8.8.8.8 and Resolve-DnsName -->
+- **Cause:** DC01 (the DNS server) was powered off, and NAT had not been created
+- **Fix:** started DC01
 
 ### Installer did not keep the static gateway and DNS
 
 - **Symptom:** Gateway and name server fields were empty again when I reopened the form.
-- **Cause:** <!-- your own explanation -->
-- **Fix:** <!-- used DHCP in the installer and set the static address with netplan afterwards -->
+- **Cause:** Did not find out the cause
+- **Fix:** Enabed automatic DHCP
 
 ### Apache configtest: Invalid command 'RewriteEngine'
 
 - **Symptom:** `apache2ctl configtest` failed.
-- **Cause:** <!-- rewrite module was not enabled -->
-- **Fix:** <!-- sudo a2enmod rewrite -->
+- **Cause:** rewrite module was not enabled
+- **Fix:** There was a typo in the config
 
 ### LDAP test: "Strong(er) authentication required (8)"
 
 - **Symptom:** the LDAP test in GLPI and `ldapsearch` both failed with error 8.
-- **Cause:** <!-- Windows Server 2025 enforces LDAP signing; GLPI uses a simple bind on port 389 -->
-- **Fix:** <!-- which GPO settings you changed on DC01 (Default Domain Controllers Policy). Note that this weakens security and that production would use LDAPS. -->
-
-### Could not find the LDAP import button
-
-- **Symptom:** no "LDAP directory link" button in _Administration → Users_.
-- **Cause and fix:** <!-- what you did: direct URL, or users were created when they first signed in -->
-
-### Could not sign in as `glpi`
-
-- **Symptom:** wrong username or password.
-- **Cause and fix:** <!-- what it turned out to be, and how you set a new password -->
-
-## What I learned
-
-- <!-- 2-4 points in your own words. Things to think about: how a ticket moves from user to solution, why systems use one central login (LDAP), why a server needs a static address, what you checked first when something did not work. -->
+- **Cause:** Windows Server 2025 enforces LDAP signing; GLPI uses a simple bind on port 389
+- **Fix:** Changed GPO (Default Domain Controllers Policy) settings on DC01
