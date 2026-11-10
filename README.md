@@ -29,9 +29,9 @@ flowchart LR
 ## Progress
 
 - [x] Step 1: Domain controller (AD, DNS, DHCP) → [docs/01-domain-controller.md](docs/01-domain-controller.md)
-- [ ] Step 2: Users, groups and Group Policy
-- [ ] Step 3: File server and permissions
-- [ ] Step 4: Ticketing system (GLPI or osTicket)
+- [x] Step 2: Users, groups and Group Policy
+- [x] Step 3: File server and permissions
+- [x] Step 4: Ticketing system (GLPI or osTicket)
 - [ ] Step 5: Remote support and monitoring
 - [ ] Step 6: Microsoft 365 trial tenant and Intune
 
